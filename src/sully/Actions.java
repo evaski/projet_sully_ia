@@ -71,7 +71,25 @@ public class Actions {
 	}
 	
 	public void tourner_de(double angle) {
-		
+		 double wheelCircumference = Math.PI * wheelDiameter; // Circonférence de la roue
+
+		 // Calculer le nombre de rotations nécessaires pour tourner l'angle spécifié
+		 // (Angle / 360) * (robotWidth / wheelDiameter) pour convertir l'angle en distance
+		 double distanceToRotate = (angle / 360) * Math.PI * robotWidth;
+
+		 // Convertir la distance à tourner en rotations de la roue
+		 double rotationsNeeded = distanceToRotate / wheelCircumference; // Nombre de rotations nécessaires
+		 int degreesToRotate = (int) (rotationsNeeded * 360); // Convertir en degrés
+
+		 // Réglage de la vitesse des moteurs
+		 leftMotor.setSpeed(motorSpeed);
+		 rightMotor.setSpeed(motorSpeed);
+
+		 // Tourner à gauche (moteur droit tourne en avant, moteur gauche en arrière)
+		 leftMotor.rotate(-degreesToRotate, true);  // Moteur gauche tourne à l'envers
+		 rightMotor.rotate(degreesToRotate, false);  // Moteur droit tourne en avant
+
+		 System.out.println("Rotation de " + angle + " degrés."); // Afficher un message pour confirmation
 	}
 }
 =======
