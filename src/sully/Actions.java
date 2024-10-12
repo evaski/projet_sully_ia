@@ -97,11 +97,9 @@ public void avancer_de(double distance) {
 
 	// Attendre que le mouvement soit terminé (ou ajouter une condition de détection)
 	Delay.msDelay(1000); // Retarder l'exécution pour permettre au robot de compléter le mouvement
-
-
-
+}
 
 }
->>>>>>> branch 'master' of https://github.com/evaski/projet_sully_ia.git
+
 
 
