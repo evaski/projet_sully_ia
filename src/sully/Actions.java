@@ -38,7 +38,34 @@ public class Actions {
 	     this.positionY = 0.0; // Position initiale
 	     this.currentAngle = 0.0; // Angle initial
 	}
-
+	
+	public void ouvrir_pince() {
+		if(isClawOpen == True) {
+			System.out.print("On ne peut pas ouvrir les pinces car elles sont déjà ouvertes");
+		}
+		else {
+			 Motor.A.setSpeed(100); // Régler la vitesse du moteur
+	         Motor.A.rotate(90); // Ouvrir les pinces à 90 degrés
+	         isClawOpen = true; // Met à jour l'état
+	         System.out.println("Les pinces sont maintenant ouvertes.");
+		}
+	}
+	
+	public void fermer_pince() {
+		if(isClawOpen == False) {
+			System.out.print("les pinces sont déjà fermées.")
+		}
+		else {
+			Motor.A.setSpeed(100); // Régler la vitesse du moteur
+            Motor.A.rotate(-90); // Fermer les pinces (rotation inverse)
+            isClawOpen = false; // Met à jour l'état
+            System.out.println("Les pinces sont maintenant fermées.");
+		}
+	}
+	
+	public void tourner_de(double angle) {
+		
+	}
 }
 
 
