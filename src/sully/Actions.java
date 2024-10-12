@@ -39,5 +39,4 @@ public class Actions {
 	     this.currentAngle = 0.0; // Angle initial
 	}
 
-
 }
