@@ -6,11 +6,6 @@ import lejos.hardware.motor.Motor;
 import lejos.utility.Delay;
 
 public class Actions {
-<<<<<<< HEAD
-
-
-
-=======
 	
 	private Motor leftMotor;      // Moteur gauche
     private Motor rightMotor;     // Moteur droit
@@ -43,8 +38,6 @@ public class Actions {
 	     this.positionY = 0.0; // Position initiale
 	     this.currentAngle = 0.0; // Angle initial
 	}
->>>>>>> branch 'master' of https://github.com/evaski/projet_sully_ia
-
 
 }
 
