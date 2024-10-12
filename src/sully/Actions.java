@@ -82,6 +82,22 @@ public class Actions {
 			throw new throw IllegalArgumentException("La distnace doit être prossitive");
 
 		}
+		
+		 // Calculer la rotation nécessaire pour parcourir la distance demandée
+        double wheelCircumference = Math.PI * WHEEL_DIAMETER;
+        double rotationsNeeded = distance / wheelCircumference;
+        int motorDegrees = (int) (rotationsNeeded * 360); // Convertir les rotations en degrés
+        
+        Motor.A.setSpeed(MOTOR_SPEED); // Moteur A correspond à une roue
+        Motor.B.setSpeed(MOTOR_SPEED); // Moteur B correspond à l'autre roue
+        
+     // Faire tourner les moteurs pour avancer
+        Motor.A.rotate(motorDegrees, true); // Lancer le moteur A en mode asynchrone
+        Motor.B.rotate(motorDegrees);       // Lancer le moteur B
+
+        // Attendre que le mouvement soit terminé (ou ajouter une condition de détection)
+        Delay.msDelay(1000); // Retarder l'exécution pour permettre au robot de compléter le mouvement
+
 
 
 
