@@ -6,7 +6,7 @@ import lejos.hardware.motor.Motor;
 import lejos.utility.Delay;
 
 /**
- * test
+ * tes
  */
 public class Actions {
 
