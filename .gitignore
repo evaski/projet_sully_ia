@@ -1,1 +1,12 @@
-/bin/
+# Ignorer le dossier bin
+bin/
+
+# Ignorer le fichier .classpath
+.classpath
+
+# Ignorer le fichier .project
+.project
+
+# Ignorer le dossier .settings
+.settings/
+
