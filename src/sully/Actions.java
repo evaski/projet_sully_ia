@@ -31,9 +31,9 @@ public class Actions {
 	private double currentAngle;   // Angle actuel du robot;
 
 	public Actions() {
-		this.leftMotor = Motor.B; // Initialise le moteur gauche
-		this.rightMotor = Motor.C; // Initialise le moteur droit
-		this.clawMotor = Motor.A; // Initialise le moteur des pinces
+		this.leftMotor = Motor.A; // Initialise le moteur gauche
+		this.rightMotor = Motor.B; // Initialise le moteur droit
+		this.clawMotor = Motor.C; // Initialise le moteur des pinces
 		this.isClawOpen = false; // État initial des pinces
 		this.motorSpeed = 100; // Vitesse par défaut
 		this.distanceThreshold = 20.0; // Seuil par défaut pour la détection
@@ -51,8 +51,8 @@ public class Actions {
 			System.out.print("On ne peut pas ouvrir les pinces car elles sont déjà ouvertes");
 		}
 		else {
-			Motor.A.setSpeed(100); // Régler la vitesse du moteur
-			Motor.A.rotate(90); // Ouvrir les pinces à 90 degrés
+			Motor.C.setSpeed(100); // Régler la vitesse du moteur
+			Motor.C.rotate(90); // Ouvrir les pinces à 90 degrés
 			isClawOpen = true; // Met à jour l'état
 			System.out.println("Les pinces sont maintenant ouvertes.");
 		}
@@ -63,8 +63,8 @@ public class Actions {
 			System.out.print("les pinces sont déjà fermées.")
 		}
 		else {
-			Motor.A.setSpeed(100); // Régler la vitesse du moteur
-			Motor.A.rotate(-90); // Fermer les pinces (rotation inverse)
+			Motor.C.setSpeed(100); // Régler la vitesse du moteur
+			Motor.C.rotate(-90); // Fermer les pinces (rotation inverse)
 			isClawOpen = false; // Met à jour l'état
 			System.out.println("Les pinces sont maintenant fermées.");
 		}
