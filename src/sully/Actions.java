@@ -5,6 +5,9 @@ import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.motor.Motor;
 import lejos.utility.Delay;
 
+/**
+ * test
+ */
 public class Actions {
 
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
