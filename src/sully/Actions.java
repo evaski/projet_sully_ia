@@ -13,6 +13,7 @@ public class Actions {
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
 	private static final double ROBOT_TRACK_WIDTH = 11.2; // Distance entre les roues en cm
 	private static final int MOTOR_SPEED = 300; // Vitesse des moteurs en degrés par seconde
+	
 
 
 	private NXTRegulatedMotor leftMotor;      // Moteur gauche
@@ -140,8 +141,32 @@ public class Actions {
 	    }
 	 
 	 public void mouvement_aleatoire() {
-		 //Liste de
+		 //Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
+		 double distance = random.nextInt(100);
+		 //Choisit un chiffre entre 0 et 360 degré pour l'angle
+		 double angle = random.nextInt(360);
+		 //Renvoi un true ou false aléatoire
+		 boolean direction = random.nextBoolean();
+		 
+		//Si true tourne à gauche donc la valeur de l'angle en positif
+		 if(direction = true) {
+			 double nombrePositif = Math.abs(angle);
+		 }
+		 
+		 //Si false tourne à droite donc la valeur de l'angle en négatif
+		 if(direction = false) {
+			 double nombrePositif = -Math.abs(angle);
+		 }
+		 
+		 avancer_de(distance);
+		 tourner_de(angle);
+		 
+		 
+		 
+		 
 	 }
+	 
+	 
 }
 
 
