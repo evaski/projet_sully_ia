@@ -13,7 +13,7 @@ public class Actions {
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
 	private static final double ROBOT_TRACK_WIDTH = 11.2; // Distance entre les roues en cm
 	private static final int MOTOR_SPEED = 300; // Vitesse des moteurs en degrés par seconde
-	
+
 
 
 	private NXTRegulatedMotor leftMotor;      // Moteur gauche
@@ -111,66 +111,65 @@ public class Actions {
 		Motor.A.setSpeed(MOTOR_SPEED); 
 		Motor.B.setSpeed(MOTOR_SPEED);
 
-		
+
 		Motor.A.rotate(motorDegrees, true); // Lancer le moteur A en mode asynchrone
 		Motor.B.rotate(motorDegrees);
 
 		Delay.msDelay(1000); 
 	}
-	
+
 	// méthode permettant au robot d'avancer d'une distance spécifique 
-	 public void reculer_de(double distance) {
-	        // Calculer le nombre de rotations nécessaires
-	        double rotations = distance / CIRCUMFERENCE;
-	        int degrees = (int) (rotations * 360); // Convertir en degrés
+	public void reculer_de(double distance) {
+		// Calculer le nombre de rotations nécessaires
+		double rotations = distance / CIRCUMFERENCE;
+		int degrees = (int) (rotations * 360); // Convertir en degrés
 
-	        // Faire reculer les moteurs
-	        Motor.A.backward();
-	        Motor.B.backward();
+		// Faire reculer les moteurs
+		Motor.A.backward();
+		Motor.B.backward();
 
-	        // Calculer le temps nécessaire pour reculer
-	        int speed = 500; // Vitesse en degrés par seconde (à ajuster selon vos besoins)
-	        int timeInMillis = (int) ((degrees / speed) * 1000); // Temps en millisecondes
+		// Calculer le temps nécessaire pour reculer
+		int speed = 500; // Vitesse en degrés par seconde (à ajuster selon vos besoins)
+		int timeInMillis = (int) ((degrees / speed) * 1000); // Temps en millisecondes
 
-	        // Attendre que le robot recule la distance spécifiée
-	        Delay.msDelay(timeInMillis);
+		// Attendre que le robot recule la distance spécifiée
+		Delay.msDelay(timeInMillis);
 
-	        // Arrêter les moteurs
-	        Motor.A.stop();
-	        Motor.B.stop();
-	    }
-	 
-	 public void mouvement_aleatoire() {
-		 //Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
-		 double distance = random.nextInt(100);
-		 //Choisit un chiffre entre 0 et 360 degré pour l'angle
-		 double angle = random.nextInt(360);
-		 //Renvoi un true ou false aléatoire
-		 boolean direction = random.nextBoolean();
-		 
+		// Arrêter les moteurs
+		Motor.A.stop();
+		Motor.B.stop();
+	}
+
+	public void mouvement_aleatoire() {
+		Random random = new Random();
+		//Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
+		double distance = random.nextDouble(100);
+		//Choisit un chiffre entre 0 et 360 degré pour l'angle
+		double angle = random.nextDouble(360);
+		//Renvoi un true ou false aléatoire
+		boolean direction = random.nextBoolean();
+
+		System.out.println("Distance aléatoire : " + distance);
+		System.out.println("Angle aléatoire : " + angle);
+		System.out.println("Direction : " + direction);
+
 		//Si true tourne à gauche donc la valeur de l'angle en positif
-		 if(direction = true) {
-			 double gauche = angle;
-			 avancer_de(distance);
-			 tourner_de(gauche);
-			 
-		 }
-		 
-		 //Si false tourne à droite donc la valeur de l'angle en négatif
-		 if(direction = false) {
-			 double droite = angle*(-1);
-			 avancer_de(distance);
-			 tourner_de(droite);
-		 }
-		 
-		 
-		 
-		 
-		 
-		 
-	 }
-	 
-	 
+		if(direction = true) {
+			double gauche = angle;
+			avancer_de(distance);
+			tourner_de(gauche);
+
+		}
+
+		//Si false tourne à droite donc la valeur de l'angle en négatif
+		if(direction = false) {
+			double droite = angle*(-1);
+			avancer_de(distance);
+			tourner_de(droite);
+		}	 
+	}
+
+
 }
 
 
