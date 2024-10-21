@@ -202,6 +202,19 @@ public class Actions {
 			
 
 	}
+	
+	/*public void tourner_vers_nord() {
+		//prend la dernière valeur du tab double de la fonction stockerOrientation()
+		Capteurs c = new Capteurs();
+		double tab = c.stocker_orientation();
+		double valeur = c[-1]; 
+
+		double newValeur = valeur*(-1);
+		tourner_de(newValeur);
+			
+		
+		
+	}*/
 
 }
 
