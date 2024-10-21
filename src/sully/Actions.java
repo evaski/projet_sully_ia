@@ -150,16 +150,20 @@ public class Actions {
 		 
 		//Si true tourne à gauche donc la valeur de l'angle en positif
 		 if(direction = true) {
-			 double nombrePositif = Math.abs(angle);
+			 double gauche = angle;
+			 avancer_de(distance);
+			 tourner_de(gauche);
+			 
 		 }
 		 
 		 //Si false tourne à droite donc la valeur de l'angle en négatif
 		 if(direction = false) {
-			 double nombrePositif = -Math.abs(angle);
+			 double droite = angle*(-1);
+			 avancer_de(distance);
+			 tourner_de(droite);
 		 }
 		 
-		 avancer_de(distance);
-		 tourner_de(angle);
+		 
 		 
 		 
 		 
