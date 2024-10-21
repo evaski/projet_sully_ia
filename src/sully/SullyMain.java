@@ -13,6 +13,9 @@ public class SullyMain {
 		 
 		 actions.fermer_pince(); 
 		 System.out.print("Test pour voir s'il ferme les pinces"); 
+		 
+		 actions.reculer(30); 
+		 actions.tourner_de(90); 
 	 }
 
 }

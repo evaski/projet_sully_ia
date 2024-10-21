@@ -52,7 +52,7 @@ public class Actions {
 		}
 		else {
 			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
-			Motor.D.rotate(90); // Ouvre les pinces à 90 degrés
+			Motor.D.rotate(180); // Ouvre les pinces à 90 degrés
 			isClawOpen = true; 
 			System.out.println("Les pinces sont maintenant ouvertes.");
 			Delay.msDelay(1000);
@@ -66,7 +66,7 @@ public class Actions {
 		}
 		else {
 			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
-			Motor.D.rotate(-90); // Ferme les pinces (rotation inverse)
+			Motor.D.rotate(-180); // Ferme les pinces (rotation inverse)
 			isClawOpen = false; 
 			Delay.msDelay(1000);
 			System.out.println("Les pinces sont maintenant fermées.");
