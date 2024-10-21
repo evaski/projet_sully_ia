@@ -138,6 +138,10 @@ public class Actions {
 	        Motor.A.stop();
 	        Motor.B.stop();
 	    }
+	 
+	 public void mouvement_aleatoire() {
+		 //Liste de
+	 }
 }
 
 
