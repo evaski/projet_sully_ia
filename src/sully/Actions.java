@@ -1,8 +1,11 @@
 package sully;
 
+import java.util.ArrayList;
+import java.util.Random;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.utility.Delay;
 
 /**
@@ -12,8 +15,8 @@ public class Actions {
 
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
 	private static final double ROBOT_TRACK_WIDTH = 11.2; // Distance entre les roues en cm
-	private static final int MOTOR_SPEED = 300; // Vitesse des moteurs en degrés par seconde
-
+	private static final int MOTOR_SPEED = 1500; // Vitesse des moteurs en degrés par seconde
+	private static final double TAILLE_ROBOT = 35; // A CHANGER AVEC UNE MESURE PLUS PRÉCISE 
 
 
 	private NXTRegulatedMotor leftMotor;      // Moteur gauche
@@ -53,7 +56,7 @@ public class Actions {
 		}
 		else {
 			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
-			Motor.D.rotate(180); // Ouvre les pinces à 90 degrés
+			Motor.D.rotate(1000); // Ouvre les pinces à 90 degrés
 			isClawOpen = true; 
 			System.out.println("Les pinces sont maintenant ouvertes.");
 			Delay.msDelay(1000);
@@ -67,7 +70,7 @@ public class Actions {
 		}
 		else {
 			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
-			Motor.D.rotate(-180); // Ferme les pinces (rotation inverse)
+			Motor.D.rotate(-1000); // Ferme les pinces (rotation inverse)
 			isClawOpen = false; 
 			Delay.msDelay(1000);
 			System.out.println("Les pinces sont maintenant fermées.");
@@ -121,7 +124,7 @@ public class Actions {
 	// méthode permettant au robot d'avancer d'une distance spécifique 
 	public void reculer_de(double distance) {
 		// Calculer le nombre de rotations nécessaires
-		double rotations = distance / CIRCUMFERENCE;
+		double rotations = distance / WHEEL_DIAMETER;
 		int degrees = (int) (rotations * 360); // Convertir en degrés
 
 		// Faire reculer les moteurs
@@ -143,9 +146,9 @@ public class Actions {
 	public void mouvement_aleatoire() {
 		Random random = new Random();
 		//Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
-		double distance = random.nextDouble(100);
+		double distance = random.nextDouble()*100;
 		//Choisit un chiffre entre 0 et 360 degré pour l'angle
-		double angle = random.nextDouble(360);
+		double angle = random.nextDouble()*360;
 		//Renvoi un true ou false aléatoire
 		boolean direction = random.nextBoolean();
 
@@ -156,19 +159,49 @@ public class Actions {
 		//Si true tourne à gauche donc la valeur de l'angle en positif
 		if(direction = true) {
 			double gauche = angle;
-			avancer_de(distance);
 			tourner_de(gauche);
+			avancer_de(distance);
+			
 
 		}
 
 		//Si false tourne à droite donc la valeur de l'angle en négatif 
 		if(direction = false) {
 			double droite = angle*(-1);
-			avancer_de(distance);
 			tourner_de(droite);
+			avancer_de(distance);
+			
 		}	 
 	}
+	
+	public void avancer_sans_palet() {
+		
+	}
+	
+	
+	public void sarreter_sans_palet(){}
+	
+	public void attraper_palet() {
+		/*Capteurs c = new Capteurs(); 
+		if(c.get_distance() <= 32 ) { // À changer quand on saura à quelle distance le robot il ne détecte plus le palet, pas ça en fait la contition parce que il va arreter de le détecter du coup il y a une autre condition 
+				this.sarreter_sans_palet();
+				this.ouvrir_pince(); 
+				this.avancer_de(32); // pareil il faut changer pour voir si c'est bien ça
+				this.fermer_pince(); 
+				}
+			else {this.avancer_sans_palet(); }*/ 
+	}
 
+	public void eviter_obstacle() {
+		/*Capteurs c = new Capteurs(); 
+			if(c.get_distance() <= 32 ) {
+				this.tourner_de(-90);
+				this.avancer_de(TAILLE_ROBOT);
+				this.tourner_de(90); 
+			} */
+			
+
+	}
 
 }
 
