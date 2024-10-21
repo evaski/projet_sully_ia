@@ -116,6 +116,28 @@ public class Actions {
 
 		Delay.msDelay(1000); 
 	}
+	
+	// méthode permettant au robot d'avancer d'une distance spécifique 
+	 public void reculer_de(double distance) {
+	        // Calculer le nombre de rotations nécessaires
+	        double rotations = distance / CIRCUMFERENCE;
+	        int degrees = (int) (rotations * 360); // Convertir en degrés
+
+	        // Faire reculer les moteurs
+	        Motor.A.backward();
+	        Motor.B.backward();
+
+	        // Calculer le temps nécessaire pour reculer
+	        int speed = 500; // Vitesse en degrés par seconde (à ajuster selon vos besoins)
+	        int timeInMillis = (int) ((degrees / speed) * 1000); // Temps en millisecondes
+
+	        // Attendre que le robot recule la distance spécifiée
+	        Delay.msDelay(timeInMillis);
+
+	        // Arrêter les moteurs
+	        Motor.A.stop();
+	        Motor.B.stop();
+	    }
 }
 
 
