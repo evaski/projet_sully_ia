@@ -161,7 +161,7 @@ public class Actions {
 
 		}
 
-		//Si false tourne à droite donc la valeur de l'angle en négatif
+		//Si false tourne à droite donc la valeur de l'angle en négatif 
 		if(direction = false) {
 			double droite = angle*(-1);
 			avancer_de(distance);
