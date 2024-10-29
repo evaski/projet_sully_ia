@@ -49,6 +49,7 @@ public class Actions {
 
 	}
 
+	// Méthode permettant d'ouvrir les pinces
 	public void ouvrir_pince() {
 		if(isClawOpen == true) {
 			System.out.print("On ne peut pas ouvrir les pinces car elles sont déjà ouvertes");
@@ -63,6 +64,7 @@ public class Actions {
 		}
 	}
 
+	// Méthode permettant de fermer les pinces
 	public void fermer_pince() {
 		if(isClawOpen == false) {
 			System.out.print("Les pinces sont déjà fermées.");
@@ -77,6 +79,7 @@ public class Actions {
 		}
 	}
 
+	// Méthode permettant au robot de tourner d'un certain angle
 	public void tourner_de(double angle) {
 		double wheelCircumference = Math.PI * WHEEL_DIAMETER; // Circonférence de la roue
 
@@ -143,6 +146,7 @@ public class Actions {
 		Motor.B.stop();
 	}
 
+	// Méthode permettant de faire un mouvement aléatoire
 	public void mouvement_aleatoire() {
 		Random random = new Random();
 		//Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
@@ -161,7 +165,7 @@ public class Actions {
 			double gauche = angle;
 			tourner_de(gauche);
 			avancer_de(distance);
-			
+
 
 		}
 
@@ -170,17 +174,31 @@ public class Actions {
 			double droite = angle*(-1);
 			tourner_de(droite);
 			avancer_de(distance);
-			
+
 		}	 
 	}
-	
-	public void avancer_sans_palet() {
-		
+
+	// Permet d'orienter le robot vers le nord (vers la ligne blanche) 
+	public void tourner_vers_nord() {
+	//prend la dernière valeur du tab double de la fonction stockerOrientation()
+	/* Capteurs c = new Capteurs();
+	double tab = c.stocker_orientation();
+	double valeur = c[-1]; 
+
+	double newValeur = valeur*(-1);
+	tourner_de(newValeur);
+	*/
+
+
 	}
-	
-	
+
+	public void avancer_sans_palet() {
+
+	}
+
+
 	public void sarreter_sans_palet(){}
-	
+
 	public void attraper_palet() {
 		/*Capteurs c = new Capteurs(); 
 		if(c.get_distance() <= 32 ) { // À changer quand on saura à quelle distance le robot il ne détecte plus le palet, pas ça en fait la contition parce que il va arreter de le détecter du coup il y a une autre condition 
@@ -194,27 +212,26 @@ public class Actions {
 
 	public void eviter_obstacle() {
 		/*Capteurs c = new Capteurs(); 
-			if(c.get_distance() <= 32 ) {
+		  double tab = c.stocker_distance();
+			if( tab[-1] <= 32 ) // Comment je choisis si je tourne à droite ou à gauche 
 				this.tourner_de(-90);
 				this.avancer_de(TAILLE_ROBOT);
 				this.tourner_de(90); 
 			} */
-			
+
 
 	}
-	
-	/*public void tourner_vers_nord() {
-		//prend la dernière valeur du tab double de la fonction stockerOrientation()
-		Capteurs c = new Capteurs();
-		double tab = c.stocker_orientation();
-		double valeur = c[-1]; 
 
-		double newValeur = valeur*(-1);
-		tourner_de(newValeur);
-			
-		
-		
-	}*/
+	//Méthode permettant de chercher un palet en faisant tourner le robot sur lui-même et en détectant un discontinuité 
+	public void rechercher_palet() {
+		this.tourner_de(360);
+		/* this.detecter_discontinuiter()  là je sais pas trop comment faire parce qu'il 
+		faut que je récupère l'angle avec le quel ça correspond la ou j'ai détecter la disontinuité et je sais pas ce que leur fonction elle va renvoyée */ 
+	}
+
+	// Méthode permettant de réinitialiser la mesure de l'angle 
+	public void reinitialisation_angle() {
+	}
 
 }
 
