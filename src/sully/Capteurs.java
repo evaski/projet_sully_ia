@@ -4,12 +4,18 @@ public class Capteurs {
 	private double distanceInitiale;
 	private double distanceFinale;
 	private int nombreTotalPoints;
+	
+	private EV3UltrasonicSensor ultrasonicSensor;
+	private EV3TouchSensor pressionSensor;
+
 	// Constructeur
 	public Capteurs(int nombreTotalPoints) {
 		// Initialisation des attributs
 		this.distanceInitiale = 0.0;
 		this.distanceFinale = 0.0;
 		this.nombreTotalPoints = nombreTotalPoints;
+		ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S1);
+		pressionSensor = new EV3TouchSensor(SensorPort.S3);
 	}
 	// Méthode privée pour lire la distance (simule la lecture d'un capteur)
 	private double lireDistance() {
@@ -56,11 +62,35 @@ public class Capteurs {
 		System.out.printf("Angle mesuré: %.2f degrés%n", angleMesure);
 		return angleMesure;
 	}
+	
+	public float getDistance() {
+		SampleProvider distanceProvider = ultrasonicSensor.getDistanceMode();
+		float[] sample = new float[distanceProvider.sampleSize()];
+		distanceProvider.fetchSample(sample, 0);
+		return sample[0]; // La distance mesurée en mètres
+	}
+
+	public void closeSensor() {
+		ultrasonicSensor.close(); // Fermer le capteur lorsqu'il n'est plus nécessaire
+	}
+
+
+	
+
+	/**
+	 * Méthode pour récupérer la valeur de la pression à un instant t.
+	 * @return pression en unités analogiques (exemple en volts ou autre unité selon le capteur)
+	 */
+	public float get_pression() {
+		SampleProvider pressionProvider = pressionSensor.getMode(0); // Mode de lecture analogique
+		float[] sample = new float[pressionProvider.sampleSize()];
+		pressionProvider.fetchSample(sample, 0);
+		return sample[0];
+	}
+
+	public void closeSensors() {
+		pressionSensor.close(); // Fermer le capteur lorsque ce n'est plus nécessaire
+	}
 }
 
 
-
-
-}
-
-}
