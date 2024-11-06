@@ -4,7 +4,7 @@ public class Capteurs {
 	private double distanceInitiale;
 	private double distanceFinale;
 	private int nombreTotalPoints;
-	
+
 	private EV3UltrasonicSensor ultrasonicSensor;
 	private EV3TouchSensor pressionSensor;
 
@@ -17,11 +17,34 @@ public class Capteurs {
 		ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S1);
 		pressionSensor = new EV3TouchSensor(SensorPort.S3);
 	}
+
+	public float getDistance() {
+		SampleProvider distanceProvider = ultrasonicSensor.getDistanceMode();
+		float[] sample = new float[distanceProvider.sampleSize()];
+		distanceProvider.fetchSample(sample, 0);
+		return sample[0]; // La distance mesurée en mètres
+	}
+
+	public void closeSensor() {
+		ultrasonicSensor.close(); // Fermer le capteur lorsqu'il n'est plus nécessaire
+	}
+
+	public float get_pression() {
+		SampleProvider pressionProvider = pressionSensor.getMode(0); // Mode de lecture analogique
+		float[] sample = new float[pressionProvider.sampleSize()];
+		pressionProvider.fetchSample(sample, 0);
+		return sample[0];
+	}
+
+	public void closeSensors() {
+		pressionSensor.close(); // Fermer le capteur lorsque ce n'est plus nécessaire
+	}
+
 	// Méthode privée pour lire la distance (simule la lecture d'un capteur)
 	private double lireDistance() {
 		// Code pour lire la distance depuis le capteur à ultrasons
 		// Simule une valeur aléatoire pour l'exemple
-		return Math.random() * 100; // À remplacer par la lecture réelle du capteur
+		return this.getDistance();  // À remplacer par la lecture réelle du capteur
 	}
 	// Méthode pour calculer l'angle de rotation en degrés avec la trigonométrie
 	public double getAngleTrigo() {
@@ -62,7 +85,7 @@ public class Capteurs {
 		System.out.printf("Angle mesuré: %.2f degrés%n", angleMesure);
 		return angleMesure;
 	}
-	
+
 	public float getDistance() {
 		SampleProvider distanceProvider = ultrasonicSensor.getDistanceMode();
 		float[] sample = new float[distanceProvider.sampleSize()];
@@ -75,7 +98,7 @@ public class Capteurs {
 	}
 
 
-	
+
 
 	/**
 	 * Méthode pour récupérer la valeur de la pression à un instant t.
