@@ -15,8 +15,10 @@ public class Actions {
 
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
 	private static final double ROBOT_TRACK_WIDTH = 11.2; // Distance entre les roues en cm
-	private static final int MOTOR_SPEED = 1500; // Vitesse des moteurs en degrés par seconde
-	private static final double TAILLE_ROBOT = 35; // A CHANGER AVEC UNE MESURE PLUS PRÉCISE 
+	private static final int MOTOR_SPEED_PINCE = 1500; // Vitesse des moteurs en degrés par seconde
+	private static final double TAILLE_ROBOT = 33; // A CHANGER AVEC UNE MESURE PLUS PRÉCISE 
+
+	private static final int MOTOR_SPEED_ROUES = 1000; // A NE PAS CHANGER 
 
 
 	private NXTRegulatedMotor leftMotor;      // Moteur gauche
@@ -56,7 +58,7 @@ public class Actions {
 			Delay.msDelay(1000);
 		}
 		else {
-			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
+			Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
 			Motor.D.rotate(1000); // Ouvre les pinces à 90 degrés
 			isClawOpen = true; 
 			System.out.println("Les pinces sont maintenant ouvertes.");
@@ -71,7 +73,7 @@ public class Actions {
 			Delay.msDelay(1000);
 		}
 		else {
-			Motor.D.setSpeed(MOTOR_SPEED); // Régle la vitesse du moteur
+			Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
 			Motor.D.rotate(-1000); // Ferme les pinces (rotation inverse)
 			isClawOpen = false; 
 			Delay.msDelay(1000);
@@ -92,8 +94,8 @@ public class Actions {
 		int degreesToRotate = (int) (rotationsNeeded * 360); // Convertir en degrés
 
 		// Réglage de la vitesse des moteurs
-		leftMotor.setSpeed(motorSpeed);
-		rightMotor.setSpeed(motorSpeed);
+		leftMotor.setSpeed(MOTOR_SPEED_ROUES);
+		rightMotor.setSpeed(MOTOR_SPEED_ROUES);
 
 		// Tourner à gauche (moteur droit tourne en avant, moteur gauche en arrière)
 		leftMotor.rotate(-degreesToRotate, true);  // Moteur gauche tourne à l'envers
@@ -114,8 +116,8 @@ public class Actions {
 		double rotationsNeeded = distance / wheelCircumference;
 		int motorDegrees = (int) (rotationsNeeded * 360); // Convertir les rotations en degrés
 
-		Motor.A.setSpeed(MOTOR_SPEED); 
-		Motor.B.setSpeed(MOTOR_SPEED);
+		Motor.A.setSpeed(MOTOR_SPEED_ROUES); 
+		Motor.B.setSpeed(MOTOR_SPEED_ROUES);
 
 
 		Motor.A.rotate(motorDegrees, true); // Lancer le moteur A en mode asynchrone
@@ -180,14 +182,14 @@ public class Actions {
 
 	// Permet d'orienter le robot vers le nord (vers la ligne blanche) 
 	public void tourner_vers_nord() {
-	//prend la dernière valeur du tab double de la fonction stockerOrientation()
-	/* Capteurs c = new Capteurs();
+		//prend la dernière valeur du tab double de la fonction stockerOrientation()
+		/* Capteurs c = new Capteurs();
 	double tab = c.stocker_orientation();
 	double valeur = c[-1]; 
 
 	double newValeur = valeur*(-1);
 	tourner_de(newValeur);
-	*/
+		 */
 
 
 	}
