@@ -196,35 +196,51 @@ public class Actions {
 
 	}
 
-	public void avancer_sans_palet() {
+	public void avancer_avec_palet() {
 
+		Capteurs c = new Capteurs(); 
+
+		if( this.rechercher_palet()) {
+			this.tourner_vers_nord();
+			while(c.getCouleur() != 0) {
+				this.avancer_de(70); // j'ai mis au pif il faudra ajuster 
+			}
+			this.avancer_de(20);
+			this.ouvrir_pince();
+		}
+		else {
+			this.rechercher_palet(); 
+		}
 	}
 
 
-	public void sarreter_sans_palet(){}
+	public void avancer_sans_palet(){
+		Capteurs c = new Capteurs(); 
+		while(c.detecterDiscontinuite()== null) {
+			this.avancer_de(50);
+		}
+	}
+	
+	public void sarreter_sans_palet() {
+		this.stop(); 
+		this.eviter_obstacle(); 
+	}
 
-	public void attraper_palet() {
-		/*Capteurs c = new Capteurs(); 
-		if(c.get_distance() <= 32 ) { // À changer quand on saura à quelle distance le robot il ne détecte plus le palet, pas ça en fait la contition parce que il va arreter de le détecter du coup il y a une autre condition 
-				this.sarreter_sans_palet();
-				this.ouvrir_pince(); 
-				this.avancer_de(32); // pareil il faut changer pour voir si c'est bien ça
-				this.fermer_pince(); 
-				}
-			else {this.avancer_sans_palet(); }*/ 
+	public void attraper_palet() {  
+			this.stop();
+			this.ouvrir_pince(); 
+			this.avancer_de(32); // pareil il faut changer pour voir si c'est bien ça
+			this.fermer_pince(); 
 	}
 
 	public void eviter_obstacle() {
-		/*Capteurs c = new Capteurs(); 
-		  double tab = c.stocker_distance();
-			if( tab[-1] <= 32 ) // Comment je choisis si je tourne à droite ou à gauche 
-				this.tourner_de(-90);
-				this.avancer_de(TAILLE_ROBOT);
-				this.tourner_de(90); 
-			} */
+		// je sais pas comment faire pour choisir de tourner à droite ou à gauche  
+		this.tourner_de(-90);
+		this.avancer_de(TAILLE_ROBOT);
+		this.tourner_de(90);
+		this.avancer_de(TAILLE_ROBOT); 
+	} 
 
-
-	}
 
 	public void stop() {
 		leftMotor.stop(true);
