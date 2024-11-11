@@ -104,6 +104,10 @@ public class Actions {
 		System.out.println("Rotation de " + angle + " degrés."); 
 	}
 
+	public boolean isMoving() {
+		return this.isMoving();
+	}
+
 	// Méthode permettant au robot d'avancer d'une distance spécifique 
 	public void avancer_de(double distance) {
 		if (distance <= 0) {
@@ -167,8 +171,6 @@ public class Actions {
 			double gauche = angle;
 			tourner_de(gauche);
 			avancer_de(distance);
-
-
 		}
 
 		//Si false tourne à droite donc la valeur de l'angle en négatif 
@@ -224,17 +226,45 @@ public class Actions {
 
 	}
 
+	public void stop() {
+		leftMotor.stop(true);
+		rightMotor.stop(true);
+	}
+
 	//Méthode permettant de chercher un palet en faisant tourner le robot sur lui-même et en détectant un discontinuité 
-	public void rechercher_palet() {
-		this.tourner_de(360);
-		/* this.detecter_discontinuiter()  là je sais pas trop comment faire parce qu'il 
-		faut que je récupère l'angle avec le quel ça correspond la ou j'ai détecter la disontinuité et je sais pas ce que leur fonction elle va renvoyée */ 
+	public boolean rechercher_palet() {
+		Capteurs c = new Capteurs(); 
+		double valeurActuelle = c.getDistance();
+		this.mouvement_aleatoire();
+		Delay.msDelay(20);
+		double valeurRecente = c.getDistance();
+		while ((valeurRecente > valeurActuelle || valeurRecente == valeurActuelle)&& this.isMoving()) {
+			valeurActuelle = valeurRecente;
+			valeurRecente = c.getDistance();
+			if (valeurActuelle - valeurRecente > 5) {
+				this.stop();
+				if (valeurRecente < 65) this.tourner_de(12);
+				return true;
+			}
+			if (valeurRecente < valeurActuelle) {
+				while ((valeurRecente < valeurActuelle || valeurRecente == valeurActuelle) && this.isMoving()) {
+					if (valeurActuelle - valeurRecente > 5) {
+						this.stop();
+						if (valeurRecente < 65) this.tourner_de(12);
+						return true;
+					}
+					valeurActuelle = valeurRecente;
+					valeurRecente = c.getDistance();
+				}
+			}
+			Delay.msDelay(20);
+		}
+		return false; //si échec de la méthode // cas supposé où les palets ne sont pas assez proche ou pas trouvé
 	}
 
 	// Méthode permettant de réinitialiser la mesure de l'angle 
 	public void reinitialisation_angle() {
 	}
-
 }
 
 
