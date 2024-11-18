@@ -78,6 +78,9 @@ public class Capteurs {
 	}
 	
 	public int getNombresPoints() {
+		while(robot.estEnTrainDeTourner()== true) {
+			
+		}
 		return 0; 
 	}
 
@@ -107,32 +110,20 @@ public class Capteurs {
 		historiqueOrientations.add(orientation);
 		return historiqueOrientations;
 	}
-
-	// ATTENTION pour l'instant je peux stocker les distances que quand je tourne il faudra voir si on en a besoin a un autre moment 
-	public double tempsPourTourner(double angle) {
-		long startTime = System.currentTimeMillis(); // Démarre le chronomètre
-		robot.tourner_de(angle); 
-		long endTime = System.currentTimeMillis(); // Arrête le chronomètre
-
-		long tempsEcoule = endTime - startTime; // Calcule le temps écoulé
-		return tempsEcoule; 
-	}
-
-	public ArrayList<Double> stockerDistance(int temps){
+	
+	public ArrayList<Double> stockerDistance(){ 
 		
-		long startTime = System.currentTimeMillis();
-		distances.clear();
-		while (System.currentTimeMillis() - startTime < temps) { 
-			distances.add(this.getDistance()); 
-
+		while(robot.estEnTrainDeBouger() == true) {
+			
+			distances.clear(); 
+			distances.add(this.getDistance());
 			try {
 				Thread.sleep(intervalleMS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		// permet d'attendre le prochain intervalle 
-		return distances ; 
+		return distances; 
 	}
 
 	public List<Integer> detecterDiscontinuite(){
