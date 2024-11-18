@@ -1,5 +1,6 @@
 package sully;
 
+
 import java.util.ArrayList;
 import java.util.Random;
 import lejos.hardware.BrickFinder;
@@ -8,9 +9,6 @@ import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.utility.Delay;
 
-/**
- * Fichier git !!!!!!!!!
- */
 public class Actions {
 
 	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
@@ -34,9 +32,9 @@ public class Actions {
 	private double positionY;     // Position Y
 	private double currentAngle;   // Angle actuel du robot;
 	private ArrayList<Object> distanceValues;
-	private ArrayList<Object> orientationValues;
+	private ArrayList<Object> orientationValues; 
 
-	public Actions() {
+	public Actions(Capteurs c) {
 		this.leftMotor = Motor.A; // Initialise le moteur gauche (j'ai vérifié c'est bien ça) 
 		this.rightMotor = Motor.B; // Initialise le moteur droit
 		this.clawMotor = Motor.D; // Initialise le moteur des pinces
@@ -47,9 +45,35 @@ public class Actions {
 		this.orientationValues = new ArrayList<>(); // Liste pour les orientations
 		this.positionX = 0.0; // Position initiale (À changer peut être) 
 		this.positionY = 0.0; // Position initiale (À changer peut être) 
-		this.currentAngle = 0.0; // Angle initial
+		this.currentAngle = 0.0; // Angle initial 
 
 	}
+	
+	public NXTRegulatedMotor get_leftMotor() {
+		return leftMotor; 
+	}
+	
+	public NXTRegulatedMotor get_rightMotor() {
+		return rightMotor; 
+	}
+	
+	public boolean estEnTrainDeTourner() {
+	    // Vérifie si les deux moteurs bougent
+	    boolean gaucheEnMouvement = leftMotor.isMoving();
+	    boolean droitEnMouvement = rightMotor.isMoving();
+
+	    if (!gaucheEnMouvement || !droitEnMouvement) {
+	        return false; // Si l'un des deux moteurs ne bouge pas, le robot ne tourne pas
+	    }
+
+	    // Vérifie les directions des moteurs à partir de leurs tachymètres
+	    int tachoGauche = leftMotor.getTachoCount();
+	    int tachoDroit = rightMotor.getTachoCount();
+
+	    // Si les moteurs tournent dans des directions opposées, le robot tourne
+	    return (tachoGauche > 0 && tachoDroit < 0) || (tachoGauche < 0 && tachoDroit > 0);
+	}
+
 
 	// Méthode permettant d'ouvrir les pinces
 	public void ouvrir_pince() {
@@ -196,13 +220,11 @@ public class Actions {
 
 	}
 
-	public void avancer_avec_palet() {
-
-		Capteurs c = new Capteurs(); 
+	/*public void avancer_avec_palet() {
 
 		if( this.rechercher_palet()) {
 			this.tourner_vers_nord();
-			while(c.getCouleur() != 0) {
+			while(capteurs.get_couleur() != 0) {
 				this.avancer_de(70); // j'ai mis au pif il faudra ajuster 
 			}
 			this.avancer_de(20);
@@ -211,12 +233,11 @@ public class Actions {
 		else {
 			this.rechercher_palet(); 
 		}
-	}
+	}*/ 
 
 
-	public void avancer_sans_palet(){
-		Capteurs c = new Capteurs(); 
-		while(c.detecterDiscontinuite()== null) {
+	/*public void avancer_sans_palet(){ 
+		while(capteurs.detecterDiscontinuite()== null) {
 			this.avancer_de(50);
 		}
 	}
@@ -229,7 +250,7 @@ public class Actions {
 	public void attraper_palet() {  
 			this.stop();
 			this.ouvrir_pince(); 
-			this.avancer_de(32); // pareil il faut changer pour voir si c'est bien ça
+			this.avancer_de(32); // j'ai trouvé entre 24 et 27 je pense on peut laisser pour 27 comme ça on est sur 
 			this.fermer_pince(); 
 	}
 
@@ -249,28 +270,27 @@ public class Actions {
 
 	//Méthode permettant de chercher un palet en faisant tourner le robot sur lui-même et en détectant un discontinuité 
 	public boolean rechercher_palet() {
-		Capteurs c = new Capteurs(); 
-		double valeurActuelle = c.getDistance();
+		double valeurActuelle = capteurs.getDistance();
 		this.mouvement_aleatoire();
 		Delay.msDelay(20);
-		double valeurRecente = c.getDistance();
-		while ((valeurRecente > valeurActuelle || valeurRecente == valeurActuelle)&& this.isMoving()) {
+		double valeurRecente = capteurs.getDistance();
+		while ((valeurRecente > valeurActuelle || valeurRecente == valeurActuelle)/*&& this.isMoving()*//*) {
 			valeurActuelle = valeurRecente;
-			valeurRecente = c.getDistance();
+			valeurRecente = capteurs.getDistance();
 			if (valeurActuelle - valeurRecente > 5) {
 				this.stop();
 				if (valeurRecente < 65) this.tourner_de(12);
 				return true;
 			}
 			if (valeurRecente < valeurActuelle) {
-				while ((valeurRecente < valeurActuelle || valeurRecente == valeurActuelle) && this.isMoving()) {
+				while ((valeurRecente < valeurActuelle || valeurRecente == valeurActuelle) /*&& this.isMoving()*//* ) {
 					if (valeurActuelle - valeurRecente > 5) {
 						this.stop();
 						if (valeurRecente < 65) this.tourner_de(12);
 						return true;
 					}
 					valeurActuelle = valeurRecente;
-					valeurRecente = c.getDistance();
+					valeurRecente = capteurs.getDistance();
 				}
 			}
 			Delay.msDelay(20);
@@ -280,8 +300,10 @@ public class Actions {
 
 	// Méthode permettant de réinitialiser la mesure de l'angle 
 	public void reinitialisation_angle() {
-	}
+	}*/
+
 }
+
 
 
 
