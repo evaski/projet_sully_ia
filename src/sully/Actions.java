@@ -128,10 +128,6 @@ public class Actions {
 		System.out.println("Rotation de " + angle + " degrés."); 
 	}
 
-	public boolean isMoving() {
-		return this.isMoving();
-	}
-
 	// Méthode permettant au robot d'avancer d'une distance spécifique 
 	public void avancer_de(double distance) {
 		if (distance <= 0) {
