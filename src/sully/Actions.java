@@ -1,185 +1,124 @@
 package sully;
 
-
-import java.util.ArrayList;
 import java.util.Random;
-import lejos.hardware.BrickFinder;
-import lejos.hardware.lcd.GraphicsLCD;
-import lejos.hardware.motor.Motor;
-import lejos.hardware.motor.NXTRegulatedMotor;
-import lejos.utility.Delay;
+
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.robotics.chassis.*;
+import lejos.robotics.navigation.MovePilot;
 
 public class Actions {
 
-	private static final double WHEEL_DIAMETER = 5.6; // Diamètre de la roue en cm
-	private static final double ROBOT_TRACK_WIDTH = 11.2; // Distance entre les roues en cm
-	private static final int MOTOR_SPEED_PINCE = 1500; // Vitesse des moteurs en degrés par seconde
-	private static final double TAILLE_ROBOT = 33; // A CHANGER AVEC UNE MESURE PLUS PRÉCISE 
+	private static final double TAILLE_ROBOT = 330; // A CHANGER AVEC UNE MESURE PLUS PRÉCISE
 
-	private static final int MOTOR_SPEED_ROUES = 1000; // A NE PAS CHANGER 
+	//Attribue pour les roues
+	private MovePilot pilot;
+	private EV3LargeRegulatedMotor portRoueGauche;
+	private EV3LargeRegulatedMotor portRoueDroite;
+	private Wheel roueGauche;
+	private Wheel roueDroite;
+	private Chassis chassis;
+
+	// Attribues pour les pinces
+	private EV3LargeRegulatedMotor pinces; 
+	private boolean estOuverte;   // État des pinces
 
 
-	private NXTRegulatedMotor leftMotor;      // Moteur gauche
-	private NXTRegulatedMotor rightMotor;     // Moteur droit
-	private NXTRegulatedMotor clawMotor;      // Moteur pour les pinces
+	//Constructeur initialisant les attributs pour les pinces et les moteurs
+	public Actions(String vitesse) { // pour l'instant j'ai fait avec un argument vitesse et en appelant la méthode setVitesse parce que je pense ça ne marche pas sans
 
-	private boolean isClawOpen;   // État des pinces 
+		//partie pour les roues
+		this.portRoueGauche = new EV3LargeRegulatedMotor(MotorPort.A); //Initialise le moteur gauche
+		this.portRoueDroite = new EV3LargeRegulatedMotor(MotorPort.B);// Initialise le moteur droit
+		//Permet d'obtenir le diamètre des roues avec offset permettant d'indiquer la distance horizontale entre la roue et l'axe central du robot
+		this.roueGauche = WheeledChassis.modelWheel(portRoueGauche, 56).offset(-70);
+		this.roueDroite = WheeledChassis.modelWheel(portRoueDroite, 56).offset(70);
+		this.chassis = new WheeledChassis(new Wheel[] { roueGauche, roueDroite }, WheeledChassis.TYPE_DIFFERENTIAL);
+		this.pilot = new MovePilot(chassis);
+		setVitesse(vitesse);
 
-	private int motorSpeed;       // Vitesse des moteurs, réglable
-	private double distanceThreshold; // Seuil pour la détection d'un obstacle ou d'un palet 
-	// Position du robot (optionnel, si tu veux gérer la localisation)
-	private double positionX;     // Position X
-	private double positionY;     // Position Y
-	private double currentAngle;   // Angle actuel du robot;
-	private ArrayList<Object> distanceValues;
-	private ArrayList<Object> orientationValues; 
-
-	public Actions(Capteurs c) {
-		this.leftMotor = Motor.A; // Initialise le moteur gauche (j'ai vérifié c'est bien ça) 
-		this.rightMotor = Motor.B; // Initialise le moteur droit
-		this.clawMotor = Motor.D; // Initialise le moteur des pinces
-		this.isClawOpen = false; // État initial des pinces
-		this.motorSpeed = 100; // Vitesse par défaut
-		this.distanceThreshold = 20.0; // Seuil par défaut pour la détection (À changer peut être) 
-		this.distanceValues = new ArrayList<>(); // Liste pour les distances
-		this.orientationValues = new ArrayList<>(); // Liste pour les orientations
-		this.positionX = 0.0; // Position initiale (À changer peut être) 
-		this.positionY = 0.0; // Position initiale (À changer peut être) 
-		this.currentAngle = 0.0; // Angle initial 
+		//partie pour les pinces
+		this.pinces = new EV3LargeRegulatedMotor(MotorPort.D);// Initialise le moteur des pinces
+		pinces.setSpeed(pinces.getMaxSpeed()); // Permet au moteur de fonctionner à sa vitesse maximale.
+		this.estOuverte = false; // État initial des pinces
 
 	}
+
+
+	//---------------------------------------------------------Méthodes pour les roues------------------------------------------------------------------------
+
+	//Permet de déterminer la vitesse que l'on souhaite en fonction du paramètre v (je suis pas sur de la structure de la méthode qu'elle marche comme ça)
+	public void setVitesse(String v) {
+		if ("rapide".equals(v)) {
+			pilot.setLinearAcceleration(300);
+			pilot.setAngularAcceleration(2000);
+			pilot.setAngularSpeed(1000);
+		} else if ("moyen".equals(v)) {
+			pilot.setLinearAcceleration(150);
+			pilot.setAngularAcceleration(1000);
+		} else if ("lent".equals(v)) {
+			pilot.setLinearAcceleration(75);
+			pilot.setAngularAcceleration(150);
+		} else if ("best".equals(v)) {
+			pilot.setLinearAcceleration(120);
+			pilot.setAngularAcceleration(400);
+			pilot.setAngularSpeed(280);
+		} else if ("tour".equals(v)) {
+			pilot.setAngularSpeed(35);
+		}
+	}
+
 	
-	public NXTRegulatedMotor get_leftMotor() {
-		return leftMotor; 
-	}
-	
-	public NXTRegulatedMotor get_rightMotor() {
-		return rightMotor; 
-	}
-	
-	public boolean estEnTrainDeTourner() {
-	    // Vérifie si les deux moteurs bougent
-	    boolean gaucheEnMouvement = leftMotor.isMoving();
-	    boolean droitEnMouvement = rightMotor.isMoving();
-
-	    if (!gaucheEnMouvement || !droitEnMouvement) {
-	        return false; // Si l'un des deux moteurs ne bouge pas, le robot ne tourne pas
-	    }
-
-	    // Vérifie les directions des moteurs à partir de leurs tachymètres
-	    int tachoGauche = leftMotor.getTachoCount();
-	    int tachoDroit = rightMotor.getTachoCount();
-
-	    // Si les moteurs tournent dans des directions opposées, le robot tourne
-	    return (tachoGauche > 0 && tachoDroit < 0) || (tachoGauche < 0 && tachoDroit > 0);
+	public void avancer_deS(double distance) {
+		pilot.travel(distance, true);
 	}
 
-
-	// Méthode permettant d'ouvrir les pinces
-	public void ouvrir_pince() {
-		if(isClawOpen == true) {
-			System.out.print("On ne peut pas ouvrir les pinces car elles sont déjà ouvertes");
-			Delay.msDelay(1000);
-		}
-		else {
-			Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
-			Motor.D.rotate(1000); // Ouvre les pinces à 90 degrés
-			isClawOpen = true; 
-			System.out.println("Les pinces sont maintenant ouvertes.");
-			Delay.msDelay(1000);
-		}
+	// Permet de faire avancer le robot en fonction de distance pris en paramètre
+	public void avancer_deA(double distance) {
+		pilot.travel(distance, false);
 	}
 
-	// Méthode permettant de fermer les pinces
-	public void fermer_pince() {
-		if(isClawOpen == false) {
-			System.out.print("Les pinces sont déjà fermées.");
-			Delay.msDelay(1000);
-		}
-		else {
-			Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
-			Motor.D.rotate(-1000); // Ferme les pinces (rotation inverse)
-			isClawOpen = false; 
-			Delay.msDelay(1000);
-			System.out.println("Les pinces sont maintenant fermées.");
-		}
+	public void reculer_deS(double distance) {
+		pilot.travel(-distance, false);
+	}
+	//Permet de faire reculer le robot en fonction de distance pris en paramètre
+	public void reculer_deA(double distance) {
+		pilot.travel(-distance, false);
 	}
 
-	// Méthode permettant au robot de tourner d'un certain angle
-	public void tourner_de(double angle) {
-		double wheelCircumference = Math.PI * WHEEL_DIAMETER; // Circonférence de la roue
+	public void tourner_deS(double angle) {
+		pilot.rotate(angle, true);
 
-		// Calculer le nombre de rotations nécessaires pour tourner l'angle spécifié
-		// (Angle / 360) * (robotWidth / wheelDiameter) pour convertir l'angle en distance
-		double distanceToRotate = (angle / 360) * Math.PI * ROBOT_TRACK_WIDTH;
+	}
+	//Permet de faire tourner le robot en fonction du degré de l'angle pris en paramètre
+	public void tourner_deA(double angle) {
+		pilot.rotate(angle, false);
 
-		// Convertir la distance à tourner en rotations de la roue
-		double rotationsNeeded = distanceToRotate / wheelCircumference; // Nombre de rotations nécessaires
-		int degreesToRotate = (int) (rotationsNeeded * 360); // Convertir en degrés
-
-		// Réglage de la vitesse des moteurs
-		leftMotor.setSpeed(MOTOR_SPEED_ROUES);
-		rightMotor.setSpeed(MOTOR_SPEED_ROUES);
-
-		// Tourner à gauche (moteur droit tourne en avant, moteur gauche en arrière)
-		leftMotor.rotate(-degreesToRotate, true);  // Moteur gauche tourne à l'envers
-		rightMotor.rotate(degreesToRotate, false);  // Moteur droit tourne en avant
-
-		System.out.println("Rotation de " + angle + " degrés."); 
 	}
 
-	// Méthode permettant au robot d'avancer d'une distance spécifique 
-	public void avancer_de(double distance) {
-		if (distance <= 0) {
-			throw new IllegalArgumentException("La distance doit être prossitive");
 
-		}
-
-		// Calculer la rotation nécessaire pour parcourir la distance demandée
-		double wheelCircumference = Math.PI * WHEEL_DIAMETER;
-		double rotationsNeeded = distance / wheelCircumference;
-		int motorDegrees = (int) (rotationsNeeded * 360); // Convertir les rotations en degrés
-
-		Motor.A.setSpeed(MOTOR_SPEED_ROUES); 
-		Motor.B.setSpeed(MOTOR_SPEED_ROUES);
-
-
-		Motor.A.rotate(motorDegrees, true); // Lancer le moteur A en mode asynchrone
-		Motor.B.rotate(motorDegrees);
-
-		Delay.msDelay(1000); 
+	//Retourne l'instance pilot
+	public MovePilot getPilot() {
+		return pilot;
 	}
 
-	// méthode permettant au robot d'avancer d'une distance spécifique 
-	public void reculer_de(double distance) {
-		// Calculer le nombre de rotations nécessaires
-		double rotations = distance / WHEEL_DIAMETER;
-		int degrees = (int) (rotations * 360); // Convertir en degrés
-
-		// Faire reculer les moteurs
-		Motor.A.backward();
-		Motor.B.backward();
-
-		// Calculer le temps nécessaire pour reculer
-		int speed = 500; // Vitesse en degrés par seconde (à ajuster selon vos besoins)
-		int timeInMillis = (int) ((degrees / speed) * 1000); // Temps en millisecondes
-
-		// Attendre que le robot recule la distance spécifiée
-		Delay.msDelay(timeInMillis);
-
-		// Arrêter les moteurs
-		Motor.A.stop();
-		Motor.B.stop();
+	// Permet d'arrêter le robot
+	public void stop() {
+		pilot.stop();
 	}
 
-	// Méthode permettant de faire un mouvement aléatoire
+	//Retourne true si le robot est en mouvement
+	public boolean getisMoving() {
+		return pilot.isMoving();
+	}
+
 	public void mouvement_aleatoire() {
 		Random random = new Random();
-		//Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance 
+		//Choisit un chiffre aléatoire entre 0cm et 100cm pour la distance
 		double distance = random.nextDouble()*100;
 		//Choisit un chiffre entre 0 et 360 degré pour l'angle
 		double angle = random.nextDouble()*360;
-		//Renvoi un true ou false aléatoire
+		//Renvoi true ou false aléatoirement
 		boolean direction = random.nextBoolean();
 
 		System.out.println("Distance aléatoire : " + distance);
@@ -189,119 +128,103 @@ public class Actions {
 		//Si true tourne à gauche donc la valeur de l'angle en positif
 		if(direction = true) {
 			double gauche = angle;
-			tourner_de(gauche);
-			avancer_de(distance);
+			tourner_deS(gauche);
+			avancer_deS(distance);
 		}
 
-		//Si false tourne à droite donc la valeur de l'angle en négatif 
+		//Si false tourne à droite donc la valeur de l'angle en négatif
 		if(direction = false) {
 			double droite = angle*(-1);
-			tourner_de(droite);
-			avancer_de(distance);
+			tourner_deS(droite);
+			avancer_deS(distance);
 
-		}	 
+		}   
 	}
 
-	// Permet d'orienter le robot vers le nord (vers la ligne blanche) 
-	public void tourner_vers_nord() {
-		//prend la dernière valeur du tab double de la fonction stockerOrientation()
-		/* Capteurs c = new Capteurs();
-	double tab = c.stocker_orientation();
-	double valeur = c[-1]; 
 
-	double newValeur = valeur*(-1);
-	tourner_de(newValeur);
-		 */
+	//---------------------------------------------------------Méthodes pour les pinces------------------------------------------------------------------------
 
+	/*ancienne méthode
+	 * public void ouvrir_pince() {
+         if(estOuverte == true) {
+              System.out.print("On ne peut pas ouvrir les pinces car elles sont déjà ouvertes");
+              Delay.msDelay(1000);
+         }
+         else {
+              Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
+              Motor.D.rotate(1000); // Ouvre les pinces à 90 degrés
+              estOuverte = true;
+              System.out.println("Les pinces sont maintenant ouvertes.");
+              Delay.msDelay(1000);
+         }
+     }
+
+     ancienne méthode
+	 * public void fermer_pince() {
+
+         if(isClawOpen == false) {
+              System.out.print("Les pinces sont déjà fermées.");
+              Delay.msDelay(1000);
+         }
+         else {
+              Motor.D.setSpeed(MOTOR_SPEED_PINCE); // Régle la vitesse du moteur
+              Motor.D.rotate(-1000); // Ferme les pinces (rotation inverse)
+              isClawOpen = false;
+              Delay.msDelay(1000);
+              System.out.println("Les pinces sont maintenant fermées.");
+         }
+     }*/
+
+	//Permet de renvoyé l'instance est ouverte pour savoir l'état des pinces
+	public boolean getEstOuvert() {
+		return this.estOuverte;
+	}
+
+	// Permet l'ouverture des pinces
+	public void ouvrir_pinces() {
+		pinces.rotate(1000);// Ouvre les pinces à 90 degrés
+		estOuverte = true;
+	}
+
+	//
+	public void fermer_pinces() {
+		pinces.rotate(-1000);// Ferme les pinces (rotation inverse)
+		estOuverte = false;
 
 	}
 
-	/*public void avancer_avec_palet() {
-
-		if( this.rechercher_palet()) {
-			this.tourner_vers_nord();
-			while(capteurs.get_couleur() != 0) {
-				this.avancer_de(70); // j'ai mis au pif il faudra ajuster 
-			}
-			this.avancer_de(20);
-			this.ouvrir_pince();
-		}
-		else {
-			this.rechercher_palet(); 
-		}
-	}*/ 
-
-
-	/*public void avancer_sans_palet(){ 
-		while(capteurs.detecterDiscontinuite()== null) {
-			this.avancer_de(50);
-		}
-	}
-	
-	public void sarreter_sans_palet() {
-		this.stop(); 
-		this.eviter_obstacle(); 
+	//Permet au robot d'attraber le palet
+	public void attraper_palet() { 
+		this.stop();
+		this.ouvrir_pinces();
+		this.avancer_deS(320); 
+		this.fermer_pinces();
 	}
 
-	public void attraper_palet() {  
-			this.stop();
-			this.ouvrir_pince(); 
-			this.avancer_de(32); // j'ai trouvé entre 24 et 27 je pense on peut laisser pour 27 comme ça on est sur 
-			this.fermer_pince(); 
-	}
-
+	//Permet au robot d'éviter un obstacle
 	public void eviter_obstacle() {
-		// je sais pas comment faire pour choisir de tourner à droite ou à gauche  
-		this.tourner_de(-90);
-		this.avancer_de(TAILLE_ROBOT);
-		this.tourner_de(90);
-		this.avancer_de(TAILLE_ROBOT); 
-	} 
-
-
-	public void stop() {
-		leftMotor.stop(true);
-		rightMotor.stop(true);
+		// je sais pas comment faire pour choisir de tourner à droite ou à gauche 
+		this.tourner_deS(-90);
+		this.avancer_deS(TAILLE_ROBOT);
+		this.tourner_deS(90);
+		this.avancer_deS(TAILLE_ROBOT);
 	}
 
-	//Méthode permettant de chercher un palet en faisant tourner le robot sur lui-même et en détectant un discontinuité 
-	public boolean rechercher_palet() {
-		double valeurActuelle = capteurs.getDistance();
-		this.mouvement_aleatoire();
-		Delay.msDelay(20);
-		double valeurRecente = capteurs.getDistance();
-		while ((valeurRecente > valeurActuelle || valeurRecente == valeurActuelle)/*&& this.isMoving()*//*) {
-			valeurActuelle = valeurRecente;
-			valeurRecente = capteurs.getDistance();
-			if (valeurActuelle - valeurRecente > 5) {
-				this.stop();
-				if (valeurRecente < 65) this.tourner_de(12);
-				return true;
-			}
-			if (valeurRecente < valeurActuelle) {
-				while ((valeurRecente < valeurActuelle || valeurRecente == valeurActuelle) /*&& this.isMoving()*//* ) {
-					if (valeurActuelle - valeurRecente > 5) {
-						this.stop();
-						if (valeurRecente < 65) this.tourner_de(12);
-						return true;
-					}
-					valeurActuelle = valeurRecente;
-					valeurRecente = capteurs.getDistance();
-				}
-			}
-			Delay.msDelay(20);
-		}
-		return false; //si échec de la méthode // cas supposé où les palets ne sont pas assez proche ou pas trouvé
+	//Permet de s'arrêter lorsque le robot n'a pas de palet
+	public void sarreter_sans_palet() {
+		this.stop();
+		this.eviter_obstacle();
 	}
 
-	// Méthode permettant de réinitialiser la mesure de l'angle 
-	public void reinitialisation_angle() {
-	}*/
+	/*
+     public void avancer_sans_palet(){
+         Capteurs c = new Capteurs();
+         while(c.detecterDiscontinuite()== null) {
+              this.avancer_de(50);
+         }
+     }*/
+
+
+
 
 }
-
-
-
-
-
-
